@@ -6,9 +6,9 @@ import PriceChart from "./PriceChart";
 import ShareButton from "./ShareButton";
 import { useRef } from "react";
 
-export default function ProductInfo({ product }) {
+export default function ProductInfo({ product, usedItems, priceHistory }) {
   const tabsRef = useRef(null);
-  console.log(1131313, product);
+  console.log("priceHistory3", priceHistory);
   const handleTabChange = (value) => {
     if (window.innerWidth < 768) {
       window.scrollTo({ top: tabsRef.current.offsetTop, behavior: "smooth" });
@@ -59,7 +59,7 @@ export default function ProductInfo({ product }) {
               value="used"
               className="data-[state=active]:bg-white data-[state=active]:shadow-sm rounded-lg transition-all"
             >
-              중고매물 ({product.listings?.used || 0})
+              중고매물 ({usedItems?.length || 0})
             </TabsTrigger>
             <TabsTrigger
               value="history"
@@ -79,13 +79,11 @@ export default function ProductInfo({ product }) {
           </TabsContent>
 
           <TabsContent value="used" className="mt-6">
-            {product.usedItems && <UsedList items={product.usedItems} />}
+            {usedItems && <UsedList items={usedItems} />}
           </TabsContent>
 
           <TabsContent value="history" className="mt-6">
-            {product.priceHistory && (
-              <PriceChart priceHistory={product.priceHistory} />
-            )}
+            {priceHistory && <PriceChart priceHistory={priceHistory} />}
           </TabsContent>
         </Tabs>
       </div>

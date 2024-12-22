@@ -83,7 +83,6 @@ export async function GET(request) {
         { status: 500 }
       );
     }
-
     const products = response.data.data.list.map((item) => ({
       id: item.strModelNo,
       name: item.strModelName,
@@ -114,7 +113,6 @@ export async function GET(request) {
         count: parseInt(item.strBbsNum) || 0,
       },
     }));
-
     return NextResponse.json(products);
   } catch (error) {
     console.error("Enuri API Error:", error);

@@ -12,7 +12,33 @@ import { ko } from "date-fns/locale";
 import { useState } from "react";
 
 export default function PriceChart({ priceHistory }) {
-  const [selectedView, setSelectedView] = useState("all"); // 'all' | 'new' | 'used'
+  const [selectedView, setSelectedView] = useState("all");
+
+  // 데이터 유효성 검사 강화
+  if (
+    !priceHistory ||
+    !Array.isArray(priceHistory.dates) ||
+    !Array.isArray(priceHistory.usedPrices) ||
+    !Array.isArray(priceHistory.newDates) ||
+    !Array.isArray(priceHistory.newPrices)
+  ) {
+    return null;
+  }
+
+  // 최소/최대 가격 계산
+  const allPrices = [
+    ...(selectedView === "all" || selectedView === "new"
+      ? priceHistory.newPrices
+      : []),
+    ...(selectedView === "all" || selectedView === "used"
+      ? priceHistory.usedPrices
+      : []),
+  ];
+
+  if (allPrices.length === 0) return null;
+
+  const minPrice = Math.min(...allPrices);
+  const maxPrice = Math.max(...allPrices);
 
   // 가격대에 따른 단위 및 포맷 설정
   const getPriceUnit = (price) => {
@@ -21,24 +47,6 @@ export default function PriceChart({ priceHistory }) {
     if (price >= 1000) return { unit: 1000, label: "천" };
     return { unit: 1, label: "" };
   };
-
-  // 최소/최대 가격 계산
-  const minPrice = Math.min(
-    ...(selectedView === "all" || selectedView === "new"
-      ? priceHistory.newPrices
-      : []),
-    ...(selectedView === "all" || selectedView === "used"
-      ? priceHistory.usedPrices
-      : [])
-  );
-  const maxPrice = Math.max(
-    ...(selectedView === "all" || selectedView === "new"
-      ? priceHistory.newPrices
-      : []),
-    ...(selectedView === "all" || selectedView === "used"
-      ? priceHistory.usedPrices
-      : [])
-  );
 
   const priceUnit = getPriceUnit(maxPrice);
   const buffer = (maxPrice - minPrice) * 0.15;
@@ -49,18 +57,26 @@ export default function PriceChart({ priceHistory }) {
     Math.ceil((maxPrice + buffer) / (priceUnit.unit / 10)) *
     (priceUnit.unit / 10);
 
-  const data = priceHistory.dates.map((date, i) => ({
-    date: parseISO(date),
-    new: priceHistory.newPrices[i],
+  // 중고매물과 새상품 데이터를 별도로 준비
+  const usedData = priceHistory.dates.map((date, i) => ({
+    date: new Date(date).getTime(), // timestamp로 변환
     used: priceHistory.usedPrices[i],
   }));
+
+  const newData = priceHistory.newDates.map((date, i) => {
+    // 날짜 문자열을 파싱 (예: "2024-03-17" 형식)
+    return {
+      date: new Date(date).getTime(),
+      new: priceHistory.newPrices[i],
+    };
+  });
 
   const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length > 0) {
       return (
         <div className="bg-white border rounded-lg shadow-lg p-3">
           <p className="text-xs text-gray-600 mb-2">
-            {format(label, "M월 d일", { locale: ko })}
+            {format(new Date(label), "M월 d일", { locale: ko })}
           </p>
           {payload.map((entry) => (
             <div key={entry.name} className="flex items-center gap-2">
@@ -104,10 +120,7 @@ export default function PriceChart({ priceHistory }) {
 
       <div className="h-[240px]">
         <ResponsiveContainer width="100%" height="100%">
-          <LineChart
-            data={data}
-            margin={{ top: 5, right: 0, bottom: 5, left: 10 }}
-          >
+          <LineChart margin={{ top: 5, right: 0, bottom: 5, left: 10 }}>
             <defs>
               <linearGradient id="newGradient" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.1} />
@@ -121,10 +134,15 @@ export default function PriceChart({ priceHistory }) {
             <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
             <XAxis
               dataKey="date"
-              tickFormatter={(date) => format(date, "M.d", { locale: ko })}
+              type="number"
+              scale="time"
+              domain={["auto", "auto"]}
+              tickFormatter={(timestamp) =>
+                format(new Date(timestamp), "M.d", { locale: ko })
+              }
               tick={{ fontSize: 12, fill: "#6B7280" }}
               stroke="#E5E7EB"
-              interval={8}
+              interval="preserveStartEnd"
             />
             <YAxis
               tickFormatter={(value) =>
@@ -142,6 +160,7 @@ export default function PriceChart({ priceHistory }) {
             <Tooltip content={<CustomTooltip />} />
             {(selectedView === "all" || selectedView === "new") && (
               <Line
+                data={newData}
                 type="monotone"
                 dataKey="new"
                 name="new"
@@ -153,6 +172,7 @@ export default function PriceChart({ priceHistory }) {
             )}
             {(selectedView === "all" || selectedView === "used") && (
               <Line
+                data={usedData}
                 type="monotone"
                 dataKey="used"
                 name="used"
