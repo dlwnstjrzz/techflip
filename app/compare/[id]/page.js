@@ -9,6 +9,8 @@ import UsedList from "@/components/compare/UsedList";
 import PriceChart from "@/components/compare/ProductInfo/PriceChart";
 import { useProductDetail } from "@/hooks/useProductDetail";
 import { usePriceAnalysis } from "@/hooks/usePriceAnalysis";
+import ProductInfoSkeleton from "@/components/compare/ProductInfo/ProductInfoSkeleton";
+import { Loader2 } from "lucide-react";
 
 export default function ComparePage() {
   const params = useParams();
@@ -16,17 +18,19 @@ export default function ComparePage() {
   const {
     product,
     usedItems,
+    usedItemsPagination,
     loading: productLoading,
     usedItemsLoading,
     error: productError,
+    setUsedItemsPage,
   } = useProductDetail(params.id);
-
+  console.log("usedItems", usedItems);
   const {
     data: priceHistory,
     loading: priceHistoryLoading,
     error: priceHistoryError,
   } = usePriceAnalysis(product?.name, params.id);
-  if (productLoading) return <div>로딩 중...</div>;
+  if (productLoading) return <ProductInfoSkeleton />;
   if (productError || !product) return <div>상품 정보를 찾을 수 없습니다.</div>;
 
   return (
@@ -42,8 +46,11 @@ export default function ComparePage() {
                 <div className="flex-1 min-w-0">
                   <ProductInfo
                     product={product}
-                    priceHistory={priceHistory}
                     usedItems={usedItems}
+                    usedItemsPagination={usedItemsPagination}
+                    setUsedItemsPage={setUsedItemsPage}
+                    priceHistory={priceHistory}
+                    usedItemsLoading={usedItemsLoading}
                   />
                 </div>
               </div>
@@ -58,8 +65,15 @@ export default function ComparePage() {
                       판매처 ({product.retailers?.length || 0})
                     </TabsTrigger>
                     <TabsTrigger value="used">
-                      중고매물 ({usedItems.length || 0})
-                      {usedItemsLoading && " (로딩중)"}
+                      중고매물{" "}
+                      {usedItemsLoading ? (
+                        <Loader2 className="ml-1 h-3 w-3 animate-spin inline" />
+                      ) : (
+                        `(${
+                          (usedItemsPagination?.joonggonara?.total || 0) +
+                          (usedItemsPagination?.bunjang?.total || 0)
+                        })`
+                      )}
                     </TabsTrigger>
                     <TabsTrigger value="history">실시간 시세</TabsTrigger>
                   </TabsList>
@@ -78,7 +92,11 @@ export default function ComparePage() {
                   </TabsContent>
 
                   <TabsContent value="used" className="mt-6">
-                    <UsedList items={usedItems} />
+                    <UsedList
+                      items={usedItems}
+                      pagination={usedItemsPagination}
+                      onPageChange={setUsedItemsPage}
+                    />
                     {usedItemsLoading && " (로딩중)"}
                   </TabsContent>
 

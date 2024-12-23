@@ -6,13 +6,16 @@ import { usePriceAnalysis } from "./usePriceAnalysis";
 
 export function useProductDetail(productId) {
   const [product, setProduct] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   const {
     items: usedItems,
+    pagination: usedItemsPagination,
     isLoading: usedItemsLoading,
     hasError: usedItemsError,
+    setPage,
   } = useUsedItems(product?.name ? cleanSearchQuery(product.name) : null);
 
   const {
@@ -91,10 +94,12 @@ export function useProductDetail(productId) {
   return {
     product,
     usedItems,
+    usedItemsPagination,
     loading,
     usedItemsLoading,
     error: error || usedItemsError,
     priceHistory,
     priceHistoryLoading,
+    setUsedItemsPage: setPage,
   };
 }

@@ -4,6 +4,8 @@ import axios from "axios";
 export async function GET(request) {
   const { searchParams } = new URL(request.url);
   const query = searchParams.get("q");
+  const page = searchParams.get("page") || "1";
+  const pageSize = "10";
 
   if (!query) {
     return NextResponse.json(
@@ -38,8 +40,8 @@ export async function GET(request) {
     tab: "0",
     isDelivery: "N",
     isRental: "N",
-    pageNum: "1",
-    pageGap: "40",
+    pageNum: page,
+    pageGap: pageSize,
     sort: "1",
     factory: "",
     factory_code: "",
@@ -74,16 +76,17 @@ export async function GET(request) {
       withCredentials: true,
     });
 
-    console.log("Enuri Response:", response.data);
+    const { data: enuriData } = response;
 
-    if (!response.data?.data?.list) {
+    if (!enuriData?.data?.list) {
       console.error("Invalid response structure:", response.data);
       return NextResponse.json(
         { error: "Invalid response structure" },
         { status: 500 }
       );
     }
-    const products = response.data.data.list.map((item) => ({
+
+    const products = enuriData.data.list.map((item) => ({
       id: item.strModelNo,
       name: item.strModelName,
       koreanName: item.strModelName,
@@ -113,7 +116,19 @@ export async function GET(request) {
         count: parseInt(item.strBbsNum) || 0,
       },
     }));
-    return NextResponse.json(products);
+
+    const totalCount = parseInt(enuriData.data.total_cnt) || 0;
+    const totalPages = Math.ceil(totalCount / parseInt(pageSize));
+
+    return NextResponse.json({
+      products,
+      pagination: {
+        currentPage: parseInt(page),
+        pageSize: parseInt(pageSize),
+        totalItems: totalCount,
+        totalPages: totalPages,
+      },
+    });
   } catch (error) {
     console.error("Enuri API Error:", error);
     return NextResponse.json({ error: error.message }, { status: 500 });

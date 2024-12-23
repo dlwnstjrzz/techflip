@@ -5,9 +5,18 @@ import UsedList from "../UsedList";
 import PriceChart from "./PriceChart";
 import ShareButton from "./ShareButton";
 import { useRef } from "react";
+import { Loader2 } from "lucide-react";
 
-export default function ProductInfo({ product, usedItems, priceHistory }) {
+export default function ProductInfo({
+  product,
+  usedItems,
+  usedItemsPagination,
+  setUsedItemsPage,
+  priceHistory,
+  usedItemsLoading,
+}) {
   const tabsRef = useRef(null);
+  console.log("product", product);
   console.log("priceHistory3", priceHistory);
   const handleTabChange = (value) => {
     if (window.innerWidth < 768) {
@@ -39,6 +48,7 @@ export default function ProductInfo({ product, usedItems, priceHistory }) {
       <PriceSummary
         priceRange={product.priceRange}
         priceChange={product.priceChange}
+        avgPrice={product.avgPrice || priceHistory?.usedPrices?.at(-1)}
       />
 
       {/* 탭 컨텐츠 - 모바일에서만 표시 */}
@@ -59,7 +69,15 @@ export default function ProductInfo({ product, usedItems, priceHistory }) {
               value="used"
               className="data-[state=active]:bg-white data-[state=active]:shadow-sm rounded-lg transition-all"
             >
-              중고매물 ({usedItems?.length || 0})
+              중고매물{" "}
+              {usedItemsLoading ? (
+                <Loader2 className="ml-1 h-3 w-3 animate-spin inline" />
+              ) : (
+                `(${
+                  (usedItemsPagination?.joonggonara?.total || 0) +
+                  (usedItemsPagination?.bunjang?.total || 0)
+                })`
+              )}
             </TabsTrigger>
             <TabsTrigger
               value="history"
@@ -79,7 +97,13 @@ export default function ProductInfo({ product, usedItems, priceHistory }) {
           </TabsContent>
 
           <TabsContent value="used" className="mt-6">
-            {usedItems && <UsedList items={usedItems} />}
+            {usedItems && (
+              <UsedList
+                items={usedItems}
+                pagination={usedItemsPagination}
+                onPageChange={setUsedItemsPage}
+              />
+            )}
           </TabsContent>
 
           <TabsContent value="history" className="mt-6">

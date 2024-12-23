@@ -110,17 +110,21 @@ export default function ProductCard({ product }) {
             </div>
 
             {/* 중고 평균가격 */}
-            {loading ? (
-              <div className="mt-1 h-5 w-24 bg-gray-100 animate-pulse rounded"></div>
-            ) : avgPrice ? (
-              <div className="flex items-baseline gap-1 mt-1 truncate">
-                <span className="text-sm text-gray-600">중고 평균</span>
+            <div className="flex items-baseline gap-1 mt-1 truncate">
+              <span className="text-sm text-gray-600">중고 평균</span>
+              {loading ? (
+                <span className="text-base text-gray-400 font-medium">
+                  집계중...
+                </span>
+              ) : avgPrice ? (
                 <span className="text-lg font-bold text-gray-600 truncate">
                   {parseInt(avgPrice).toLocaleString()}
                   <span className="text-sm font-normal ml-0.5">원</span>
                 </span>
-              </div>
-            ) : null}
+              ) : (
+                <span className="text-sm text-gray-400">정보 없음</span>
+              )}
+            </div>
           </div>
 
           {/* 배송 정보 */}
@@ -135,7 +139,7 @@ export default function ProductCard({ product }) {
 
       {/* 하단 정보 */}
       <div className="mt-4 pt-3 border-t">
-        {/* PC 버전 그���드 */}
+        {/* PC 버전 그드 */}
         <div className="hidden md:flex flex-col gap-4">
           <div className="grid grid-cols-2 gap-4">
             {/* 판매처 정보 */}
@@ -149,7 +153,7 @@ export default function ProductCard({ product }) {
               </div>
             </div>
 
-            {/* 가격변동 정보 */}
+            {/* PC 버전 가격변동 정보 */}
             <div className="bg-gray-50 rounded-lg px-4 py-3">
               <div className="flex items-center gap-1.5">
                 <div className="text-sm text-gray-500">가격변동</div>
@@ -197,7 +201,7 @@ export default function ProductCard({ product }) {
               </div>
             </div>
 
-            {/* 가격변동 정보 */}
+            {/* 모바일 버전 가격변동 정��도 동일하게 수정 */}
             <div className="bg-gray-50 rounded-lg px-3 py-2">
               <div className="flex items-center gap-1">
                 <div className="text-xs text-gray-500">가격변동</div>
@@ -214,11 +218,13 @@ export default function ProductCard({ product }) {
                 )}
               >
                 {Math.abs(product.priceChange)}%
-                {product.priceChange !== 0 && (
-                  <span className="text-xs">
-                    {product.priceChange < 0 ? "하락" : "상승"}
-                  </span>
-                )}
+                <span className="text-xs font-normal ml-1">
+                  {product.priceChange < 0
+                    ? "하락"
+                    : product.priceChange > 0
+                    ? "상승"
+                    : "변동없음"}
+                </span>
               </div>
             </div>
           </div>
@@ -237,7 +243,10 @@ export default function ProductCard({ product }) {
   // 링크로 감싸기
   const handleClick = (e) => {
     e.preventDefault();
-    localStorage.setItem(`product_${product.id}`, JSON.stringify(product));
+    localStorage.setItem(
+      `product_${product.id}`,
+      JSON.stringify({ ...product, avgPrice })
+    );
     router.push(`/compare/${product.id}`);
   };
 

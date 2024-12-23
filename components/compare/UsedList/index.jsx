@@ -1,6 +1,8 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef } from "react";
 import UsedItemCard from "./UsedItemCard";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 const PLATFORMS = [
   {
@@ -16,21 +18,39 @@ const PLATFORMS = [
   },
 ];
 
-export default function UsedList({ items = [] }) {
+export default function UsedList({ items = [], pagination, onPageChange }) {
   const [selectedPlatform, setSelectedPlatform] = useState("joonggonara");
+  const listRef = useRef(null);
 
   const filteredItems = useMemo(() => {
-    return items.filter((item) => item.platform === selectedPlatform);
+    return items[selectedPlatform] || [];
   }, [items, selectedPlatform]);
-
+  console.log("gdgd", pagination);
+  console.log("items", items);
   // 플랫폼별 아이템 수 계산
   const platformCounts = useMemo(() => {
     return {
-      joonggonara: items.filter((item) => item.platform === "joonggonara")
-        .length,
-      bunjang: items.filter((item) => item.platform === "bunjang").length,
+      joonggonara: items.joonggonara?.length || 0,
+      bunjang: items.bunjang?.length || 0,
     };
   }, [items]);
+
+  const handlePlatformChange = (platform) => {
+    setSelectedPlatform(platform);
+    if (onPageChange) {
+      onPageChange(platform, 1);
+      listRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
+
+  const handlePageChange = (newPage) => {
+    if (onPageChange) {
+      onPageChange(selectedPlatform, newPage);
+      listRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
+
+  const currentPagination = pagination?.[selectedPlatform];
 
   return (
     <div className="space-y-6">
@@ -40,7 +60,7 @@ export default function UsedList({ items = [] }) {
           {PLATFORMS.map((platform) => (
             <button
               key={platform.id}
-              onClick={() => setSelectedPlatform(platform.id)}
+              onClick={() => handlePlatformChange(platform.id)}
               className={cn(
                 "flex items-center gap-2 px-5 py-2.5 rounded-lg transition-all",
                 selectedPlatform === platform.id
@@ -68,14 +88,70 @@ export default function UsedList({ items = [] }) {
       </div>
 
       {/* 상품 목록 */}
-      {filteredItems.length > 0 ? (
-        <div className="grid grid-cols-2 gap-4">
-          {filteredItems.map((item) => (
-            <UsedItemCard key={`${item.platform}-${item.id}`} item={item} />
-          ))}
+      <div ref={listRef}>
+        {filteredItems.length > 0 ? (
+          <div className="grid grid-cols-2 gap-4">
+            {filteredItems.map((item) => (
+              <UsedItemCard key={`${item.platform}-${item.id}`} item={item} />
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-8 text-gray-500">매물이 없습니다</div>
+        )}
+      </div>
+
+      {/* 페이지네이션 추가 */}
+      {currentPagination && currentPagination.totalPages > 1 && (
+        <div className="mt-8 flex items-center justify-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => handlePageChange(currentPagination.currentPage - 1)}
+            disabled={currentPagination.currentPage === 1}
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </Button>
+          <div className="flex items-center gap-1">
+            {Array.from(
+              { length: currentPagination.totalPages },
+              (_, i) => i + 1
+            )
+              .filter(
+                (pageNum) =>
+                  pageNum === 1 ||
+                  pageNum === currentPagination.totalPages ||
+                  Math.abs(pageNum - currentPagination.currentPage) <= 2
+              )
+              .map((pageNum, index, array) => (
+                <div key={pageNum}>
+                  {index > 0 && array[index - 1] !== pageNum - 1 && (
+                    <span className="px-2 text-gray-400">...</span>
+                  )}
+                  <Button
+                    variant={
+                      pageNum === currentPagination.currentPage
+                        ? "default"
+                        : "outline"
+                    }
+                    size="sm"
+                    onClick={() => handlePageChange(pageNum)}
+                  >
+                    {pageNum}
+                  </Button>
+                </div>
+              ))}
+          </div>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => handlePageChange(currentPagination.currentPage + 1)}
+            disabled={
+              currentPagination.currentPage === currentPagination.totalPages
+            }
+          >
+            <ChevronRight className="h-4 w-4" />
+          </Button>
         </div>
-      ) : (
-        <div className="text-center py-8 text-gray-500">매물이 없습니다</div>
       )}
     </div>
   );

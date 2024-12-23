@@ -7,12 +7,55 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
-import { format, parseISO } from "date-fns";
+import { format } from "date-fns";
 import { ko } from "date-fns/locale";
-import { useState } from "react";
+import { useState, useMemo } from "react";
+import { cn } from "@/lib/utils";
 
 export default function PriceChart({ priceHistory }) {
   const [selectedView, setSelectedView] = useState("all");
+  // 데이터 준비
+  const newData = useMemo(() => {
+    if (!priceHistory?.newDates) return [];
+    return priceHistory.newDates.map((date, index) => ({
+      date: new Date(date).getTime(),
+      new: priceHistory.newPrices[index],
+    }));
+  }, [priceHistory?.newDates, priceHistory?.newPrices]);
+
+  const usedData = useMemo(() => {
+    if (!priceHistory?.dates) return [];
+    return priceHistory.dates.map((date, index) => ({
+      date: new Date(date).getTime(),
+      used: priceHistory.usedPrices[index],
+    }));
+  }, [priceHistory?.dates, priceHistory?.usedPrices]);
+
+  // 중고매물 날짜 기준으로 새상품 가격 매핑
+  const newDataWithUsedDates = useMemo(() => {
+    if (!priceHistory?.dates) return [];
+    return priceHistory.dates.map((date) => {
+      const targetDate = new Date(date).getTime();
+      // 가장 가까운 새상품 가격 찾기
+      let closestIndex = 0;
+      let minDiff = Math.abs(
+        new Date(priceHistory.newDates[0]).getTime() - targetDate
+      );
+
+      priceHistory.newDates.forEach((newDate, i) => {
+        const diff = Math.abs(new Date(newDate).getTime() - targetDate);
+        if (diff < minDiff) {
+          minDiff = diff;
+          closestIndex = i;
+        }
+      });
+
+      return {
+        date: targetDate,
+        new: priceHistory.newPrices[closestIndex],
+      };
+    });
+  }, [priceHistory]);
 
   // 데이터 유효성 검사 강화
   if (
@@ -40,12 +83,10 @@ export default function PriceChart({ priceHistory }) {
   const minPrice = Math.min(...allPrices);
   const maxPrice = Math.max(...allPrices);
 
-  // 가격대에 따른 단위 및 포맷 설정
+  // 가격대에 단위 및 포맷 설정
   const getPriceUnit = (price) => {
-    if (price >= 10000000) return { unit: 10000000, label: "천만" };
-    if (price >= 100000) return { unit: 10000, label: "만" };
-    if (price >= 1000) return { unit: 1000, label: "천" };
-    return { unit: 1, label: "" };
+    if (price >= 10000) return { unit: 10000, label: "만" };
+    return { unit: 1, label: "원" };
   };
 
   const priceUnit = getPriceUnit(maxPrice);
@@ -57,47 +98,41 @@ export default function PriceChart({ priceHistory }) {
     Math.ceil((maxPrice + buffer) / (priceUnit.unit / 10)) *
     (priceUnit.unit / 10);
 
-  // 중고매물과 새상품 데이터를 별도로 준비
-  const usedData = priceHistory.dates.map((date, i) => ({
-    date: new Date(date).getTime(), // timestamp로 변환
-    used: priceHistory.usedPrices[i],
-  }));
-
-  const newData = priceHistory.newDates.map((date, i) => {
-    // 날짜 문자열을 파싱 (예: "2024-03-17" 형식)
-    return {
-      date: new Date(date).getTime(),
-      new: priceHistory.newPrices[i],
-    };
-  });
-
   const CustomTooltip = ({ active, payload, label }) => {
-    if (active && payload && payload.length > 0) {
-      return (
-        <div className="bg-white border rounded-lg shadow-lg p-3">
-          <p className="text-xs text-gray-600 mb-2">
-            {format(new Date(label), "M월 d일", { locale: ko })}
-          </p>
-          {payload.map((entry) => (
-            <div key={entry.name} className="flex items-center gap-2">
-              <div
-                className={`w-2 h-2 rounded-full ${
-                  entry.name === "new" ? "bg-blue-500" : "bg-gray-500"
-                }`}
-              />
-              <span className="text-sm font-medium">
-                {entry.value.toLocaleString()}원
-              </span>
-            </div>
-          ))}
+    if (!active || !payload || !payload.length) return null;
+
+    return (
+      <div className="bg-white p-2 border rounded-lg shadow-sm">
+        <div className="text-xs text-gray-500">
+          {format(new Date(label), "M월 d일", { locale: ko })}
         </div>
-      );
-    }
-    return null;
+        {payload.map((item) => (
+          <div
+            key={item.dataKey}
+            className="flex items-center gap-2 whitespace-nowrap"
+          >
+            <span
+              className={cn(
+                "text-sm font-medium",
+                item.dataKey === "new" ? "text-blue-600" : "text-gray-600"
+              )}
+            >
+              {item.dataKey === "new" ? "새상품" : "중고상품"}
+            </span>
+            <span className="text-sm">
+              {Number(item.value).toLocaleString()}원
+            </span>
+          </div>
+        ))}
+      </div>
+    );
   };
 
   return (
     <div className="mt-8">
+      <p className="text-sm text-gray-500 mb-4">
+        * 시세는 최대 3개월까지 표시됩니다.
+      </p>
       <div className="inline-flex rounded-lg p-0.5 bg-gray-100 mb-4">
         {[
           { id: "all", label: "전체" },
@@ -136,46 +171,40 @@ export default function PriceChart({ priceHistory }) {
               dataKey="date"
               type="number"
               scale="time"
-              domain={["auto", "auto"]}
-              tickFormatter={(timestamp) =>
-                format(new Date(timestamp), "M.d", { locale: ko })
-              }
-              tick={{ fontSize: 12, fill: "#6B7280" }}
-              stroke="#E5E7EB"
-              interval="preserveStartEnd"
+              domain={["dataMin", "dataMax"]}
+              tickFormatter={(date) => format(date, "M.d", { locale: ko })}
+              stroke="#9CA3AF"
+              fontSize={12}
             />
             <YAxis
+              orientation="right"
+              width={55}
+              domain={[yAxisMin, yAxisMax]}
               tickFormatter={(value) =>
                 `${Math.round(value / priceUnit.unit).toLocaleString()}${
                   priceUnit.label
                 }`
               }
-              tick={{ fontSize: 12, fill: "#6B7280" }}
-              width={55}
-              stroke="#E5E7EB"
-              domain={[yAxisMin, yAxisMax]}
-              padding={{ top: 10, bottom: 10 }}
-              orientation="right"
+              stroke="#9CA3AF"
+              fontSize={12}
             />
             <Tooltip content={<CustomTooltip />} />
-            {(selectedView === "all" || selectedView === "new") && (
+            {(selectedView === "new" || selectedView === "all") && (
               <Line
-                data={newData}
+                data={selectedView === "all" ? newDataWithUsedDates : newData}
                 type="monotone"
                 dataKey="new"
-                name="new"
                 stroke="#3B82F6"
                 strokeWidth={2}
                 dot={false}
                 fill="url(#newGradient)"
               />
             )}
-            {(selectedView === "all" || selectedView === "used") && (
+            {(selectedView === "used" || selectedView === "all") && (
               <Line
                 data={usedData}
                 type="monotone"
                 dataKey="used"
-                name="used"
                 stroke="#4B5563"
                 strokeWidth={2}
                 dot={false}

@@ -12,17 +12,19 @@ function getCondition(status) {
 
 export async function GET(request) {
   const { searchParams } = new URL(request.url);
-  const query = searchParams.get("query");
-  console.log("query", query);
+  const query = searchParams.get("q");
+  const page = parseInt(searchParams.get("page") || "1");
+  const pageSize = parseInt(searchParams.get("pageSize") || "20");
+
   if (!query) {
     return NextResponse.json({ error: "Query is required" }, { status: 400 });
   }
 
   try {
     const response = await fetch(
-      `https://api.bunjang.co.kr/api/1/find_v2.json?order=score&n=96&page=0&req_ref=search&q=${encodeURIComponent(
-        query
-      )}&stat_device=w&version=5`,
+      `https://api.bunjang.co.kr/api/1/find_v2.json?order=score&n=${pageSize}&page=${
+        page - 1
+      }&req_ref=search&q=${encodeURIComponent(query)}&stat_device=w&version=5`,
       {
         headers: {
           Origin: "https://m.bunjang.co.kr",
@@ -34,9 +36,19 @@ export async function GET(request) {
 
     const data = await response.json();
 
+    // 광고 제외 및 잘못된 데이터 필터링
+    const filteredItems = data.list.filter((item) => {
+      return (
+        !item.ad &&
+        item.pid && // pid가 있는 경우만
+        item.name && // 제목이 있는 경우만
+        item.price && // 가격이 있는 경우만
+        item.update_time
+      ); // 날짜가 있는 경우만
+    });
+
     // 번개장터 데이터를 우리 서비스 형식으로 변환
-    const usedItems = data.list.map((item) => ({
-      ad: item.ad,
+    const usedItems = filteredItems.map((item) => ({
       id: item.pid,
       title: item.name,
       price: item.price,
@@ -61,6 +73,9 @@ export async function GET(request) {
       items: usedItems,
       meta: {
         total: data.num_found,
+        currentPage: page,
+        pageSize: pageSize,
+        totalPages: Math.ceil(data.num_found / pageSize),
         platform: {
           bunjang: usedItems.length,
         },

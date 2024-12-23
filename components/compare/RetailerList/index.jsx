@@ -7,7 +7,7 @@ export default function RetailerList({ retailers, total }) {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div className="text-sm text-gray-500">
-          가격이 낮은 상위 10개 판매처
+          가격이 낮은 상위 {retailers.length}개 판매처
         </div>
         <div className="text-xs text-gray-400">최근 30일 기준</div>
       </div>

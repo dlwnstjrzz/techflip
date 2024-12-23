@@ -12,6 +12,8 @@ function cleanText(text) {
 export async function GET(request) {
   const { searchParams } = new URL(request.url);
   const query = searchParams.get("q");
+  const page = parseInt(searchParams.get("page") || "1");
+  const pageSize = parseInt(searchParams.get("pageSize") || "20");
 
   if (!query) {
     return NextResponse.json(
@@ -24,7 +26,7 @@ export async function GET(request) {
     const response = await fetch(
       `https://apis.naver.com/cafe-web/cafe-search-api/v5.0/trade-search/all?recommendKeyword=true&query=${encodeURIComponent(
         query
-      )}&searchOrderParamType=DEFAULT&page=1&size=50`,
+      )}&searchOrderParamType=DEFAULT&page=${page}&size=${pageSize}`,
       {
         headers: {
           accept: "application/json, text/plain, */*",
@@ -74,6 +76,9 @@ export async function GET(request) {
       items: usedItems,
       meta: {
         total: data.result.totalCount,
+        currentPage: page,
+        pageSize: pageSize,
+        totalPages: Math.ceil(data.result.totalCount / pageSize),
         platform: {
           joonggonara: usedItems.length,
         },
