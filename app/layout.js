@@ -1,17 +1,14 @@
 import "./globals.css";
 import Header from "@/components/layout/Header";
 import localFont from "next/font/local";
-import { Kanit } from "next/font/google";
 
 const pretendard = localFont({
   src: "../public/fonts/PretendardVariable.woff2",
   variable: "--font-pretendard",
 });
 
-const kanit = Kanit({
-  weight: "700",
-  style: "italic",
-  subsets: ["latin"],
+const kanit = localFont({
+  src: "../public/fonts/Kanit-BoldItalic.ttf",
   variable: "--font-kanit",
 });
 
