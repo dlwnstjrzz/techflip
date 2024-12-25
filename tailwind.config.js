@@ -70,6 +70,10 @@ module.exports = {
           "100%": { transform: "translateX(0)" },
         },
       },
+      fontFamily: {
+        pretendard: ["var(--font-pretendard)"],
+        kanit: ["var(--font-kanit)"],
+      },
     },
   },
   plugins: [require("tailwindcss-animate")],

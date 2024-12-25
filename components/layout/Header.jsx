@@ -8,7 +8,7 @@ import SearchInput from "@/components/search/SearchInput";
 import RecentSearches from "@/components/search/RecentSearches";
 import { cn } from "@/lib/utils";
 import { getRecentSearches } from "@/lib/recentSearches";
-
+import Image from "next/image";
 export default function Header({ showOnlyInSubPages }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -54,9 +54,15 @@ export default function Header({ showOnlyInSubPages }) {
             ) : (
               <Link
                 href="/"
-                className="flex items-center gap-2 font-semibold tracking-tight text-foreground"
+                className="flex items-center gap-2 font-kanit tracking-tight text-foreground"
               >
-                TechFlip
+                DAMOA
+                {/* <Image
+                  width={250}
+                  height={40}
+                  src="/images/damoa_logo.jpeg"
+                  alt="Damoa"
+                /> */}
               </Link>
             )}
 

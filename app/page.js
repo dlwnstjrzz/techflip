@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import SearchInput from "@/components/search/SearchInput";
 import { ChevronRight, History, Sparkles, TrendingUp } from "lucide-react";
+import Link from "next/link";
 
 export default function Home() {
   const router = useRouter();
@@ -18,21 +19,16 @@ export default function Home() {
 
       {/* 헤더 */}
       <header className="relative z-10 border-b bg-white/80 backdrop-blur-sm">
-        <div className="container mx-auto px-4">
-          <div className="h-16 flex items-center justify-between">
+        <div className="container mx-auto px-4 flex justify-center">
+          <div className="h-16 flex items-center">
             <div className="flex items-center gap-2">
-              <span className="font-semibold tracking-tight text-gray-900">
-                TechFlip
-              </span>
-            </div>
-            <nav className="flex items-center gap-6">
-              <button
-                onClick={() => router.push("/search")}
-                className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors"
+              <Link
+                href="/"
+                className="flex items-center gap-2 text-2xl font-kanit tracking-tight text-foreground"
               >
-                제품 검색
-              </button>
-            </nav>
+                DAMOA
+              </Link>
+            </div>
           </div>
         </div>
       </header>
@@ -128,10 +124,10 @@ export default function Home() {
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600">
-              주요 기능 살펴보기
+              다모아의 핵심 기능
             </h2>
             <p className="mt-4 text-lg text-gray-600">
-              TechFlip의 스마트한 기능을 확인해보세요
+              새상품부터 중고까지 한눈에 비교하세요
             </p>
           </div>
 
@@ -158,7 +154,7 @@ export default function Home() {
                     </h3>
                   </div>
                   <p className="text-sm text-gray-600">
-                    시간에 따른 가격 변화를 확인하고 최적의 구매 시점을
+                    3개월간의 가격 변화를 확인하고 최적의 구매 타이밍을
                     찾아보세요
                   </p>
                 </div>
@@ -177,12 +173,12 @@ export default function Home() {
                   </div>
                   <p className="text-gray-600 leading-relaxed">
                     <span className="font-medium text-purple-900/80">
-                      시간에 따른 가격 변화
+                      3개월간의 가격 변화
                     </span>
                     를 확인하고
                     <br />
                     <span className="font-medium text-purple-900/80">
-                      최적의 구매 시점
+                      최적의 구매 타이밍
                     </span>
                     을 찾아보세요
                   </p>
@@ -220,7 +216,7 @@ export default function Home() {
                     </h3>
                   </div>
                   <p className="text-sm text-gray-600">
-                    다양한 쇼핑몰의 가격을 한눈에 비교하고 최저가를 찾아보세요
+                    모든 쇼핑몰의 가격을 실시간으로 비교하고 최저가로 구매하세요
                   </p>
                 </div>
               </div>
@@ -238,13 +234,15 @@ export default function Home() {
                   </div>
                   <p className="text-gray-600 leading-relaxed">
                     <span className="font-medium text-blue-900/80">
-                      다양한 쇼핑몰의 가격
+                      모든 쇼핑몰의 가격
                     </span>
-                    을 한눈에
+                    을 실시간으로
                     <br />
                     비교하고{" "}
-                    <span className="font-medium text-blue-900/80">최저가</span>
-                    를 찾아보세요
+                    <span className="font-medium text-blue-900/80">
+                      최저가로 구매
+                    </span>
+                    하세요
                   </p>
                 </div>
                 <div className="relative p-4 bg-white/80">
@@ -259,7 +257,7 @@ export default function Home() {
               </div>
             </div>
 
-            {/* 중고 시세 확인 */}
+            {/* 중고 시세 ��인 */}
             <div className="group bg-white rounded-3xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 border border-gray-100">
               {/* 모바일 버전 */}
               <div className="md:hidden">
@@ -280,7 +278,7 @@ export default function Home() {
                     </h3>
                   </div>
                   <p className="text-sm text-gray-600">
-                    실시간 중고 매물 가격으로 정확한 시세를 파악하세요
+                    중고나라·번개장터의 실시간 중고 시세를 확인하세요
                   </p>
                 </div>
               </div>
@@ -298,14 +296,14 @@ export default function Home() {
                   </div>
                   <p className="text-gray-600 leading-relaxed">
                     <span className="font-medium text-green-900/80">
-                      실시간 중고 매물 가격
+                      중고나라·번개장터
                     </span>
-                    으로
+                    의
                     <br />
                     <span className="font-medium text-green-900/80">
-                      정확한 시세
+                      실시간 중고 시세
                     </span>
-                    를 파악하세요
+                    를 확인하세요
                   </p>
                 </div>
                 <div className="relative p-4 bg-white/80">
@@ -329,33 +327,87 @@ export default function Home() {
 // 로고 데이터
 const logos = [
   {
+    //
     src: "https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg",
     alt: "Apple",
     height: 8,
   },
   {
+    //
     src: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b4/Samsung_wordmark.svg/2880px-Samsung_wordmark.svg.png",
     alt: "Samsung",
     height: 6,
   },
   {
+    //
     src: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8d/LG_logo_%282014%29.svg/400px-LG_logo_%282014%29.svg.png",
     alt: "LG",
     height: 8,
   },
   {
+    //
+    src: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/85/Intel_logo_2023.svg/2880px-Intel_logo_2023.svg.png",
+    alt: "Intel",
+    height: 6,
+  },
+  {
+    //
+    src: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7c/AMD_Logo.svg/2880px-AMD_Logo.svg.png",
+    alt: "AMD",
+    height: 6,
+  },
+  {
+    //
+    src: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/18/Dell_logo_2016.svg/1280px-Dell_logo_2016.svg.png",
+    alt: "Dell",
+    height: 8,
+  },
+  {
+    //
+    src: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ad/HP_logo_2012.svg/1200px-HP_logo_2012.svg.png",
+    alt: "HP",
+    height: 8,
+  },
+  {
+    //
+    src: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b8/Lenovo_logo_2015.svg/1280px-Lenovo_logo_2015.svg.png",
+    alt: "Lenovo",
+    height: 6,
+  },
+  {
+    //
     src: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/Sony_logo.svg/2880px-Sony_logo.svg.png",
     alt: "Sony",
     height: 6,
   },
   {
+    //
     src: "https://upload.wikimedia.org/wikipedia/commons/9/96/Microsoft_logo_%282012%29.svg",
     alt: "Microsoft",
     height: 8,
   },
   {
+    //
     src: "https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg",
     alt: "Google",
     height: 8,
+  },
+  {
+    //
+    src: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/NVIDIA_logo.svg/2880px-NVIDIA_logo.svg.png",
+    alt: "NVIDIA",
+    height: 6,
+  },
+  {
+    //
+    src: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/ASUS_Logo.svg/440px-ASUS_Logo.svg.png",
+    alt: "ASUS",
+    height: 6,
+  },
+  {
+    //
+    src: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/00/Acer_2011.svg/600px-Acer_2011.svg.png",
+    alt: "Acer",
+    height: 6,
   },
 ];
