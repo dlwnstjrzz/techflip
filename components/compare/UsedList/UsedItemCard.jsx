@@ -38,13 +38,13 @@ export default function UsedItemCard({ item }) {
         ) : (
           <div className="w-full h-full flex items-center justify-center">
             <img
-              src={
+              src={`/api/image-proxy?url=${encodeURIComponent(
                 isNaverCafe
                   ? cafeThumbnail
                   : PLATFORM_LOGOS[
                       item.platform === "bunjang" ? "번개장터" : "당근마켓"
                     ].src
-              }
+              )}`}
               alt={isNaverCafe ? item.meta.cafeName : item.platform}
               className="w-1/2 h-1/2 object-contain opacity-10"
             />
