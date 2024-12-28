@@ -4,19 +4,26 @@ import Image from "next/image";
 
 const PLATFORM_LOGOS = {
   당근마켓: {
-    src: "https://i.namu.wiki/i/urKu84c6cV1U3tmZqPiopxkCnQOn96j3gA6Wf730iSTzz41XDOeqypSusjBVPXeHxGe8RJAOjMY11uywzcDqSA.svg",
+    src: "/images/daangn-logo.svg",
     width: 60,
   },
   번개장터: {
-    src: "https://i0.wp.com/itsdwayne.co.kr/wp-content/uploads/2023/09/%EB%B2%88%EA%B0%9C%EC%9E%A5%ED%84%B0-optimized.webp?resize=640%2C153&ssl=1",
+    src: "/images/bunjang-logo.webp",
+  },
+  네이버카페: {
+    src: "/images/naver-cafe-logo.jpg",
+  },
+  중고나라: {
+    src: "/images/joonggonara-logo.svg",
   },
 };
 
-const DEFAULT_CAFE_THUMBNAIL =
-  "https://i.namu.wiki/i/-EOPzfOdsH6wqGebXaKSmKxWS94qR8zBdDg89OM4y5hBds44-q17Kqrs6gC1Iy8EBkklj4AKEwzIC6FsUhgF0w.webp";
 export default function UsedItemCard({ item }) {
   const isNaverCafe = item.meta?.cafeName;
-  const cafeThumbnail = item.meta?.cafeThumbnail || DEFAULT_CAFE_THUMBNAIL;
+  const cafeThumbnail =
+    item.meta?.cafeName === "중고나라"
+      ? PLATFORM_LOGOS.중고나라.src
+      : PLATFORM_LOGOS.네이버카페.src;
 
   return (
     <a
@@ -38,13 +45,13 @@ export default function UsedItemCard({ item }) {
         ) : (
           <div className="w-full h-full flex items-center justify-center">
             <img
-              src={`/api/image-proxy?url=${encodeURIComponent(
+              src={
                 isNaverCafe
                   ? cafeThumbnail
                   : PLATFORM_LOGOS[
                       item.platform === "bunjang" ? "번개장터" : "당근마켓"
                     ].src
-              )}`}
+              }
               alt={isNaverCafe ? item.meta.cafeName : item.platform}
               className="w-1/2 h-1/2 object-contain opacity-10"
             />
@@ -58,6 +65,7 @@ export default function UsedItemCard({ item }) {
               className="w-4 h-4 bg-no-repeat bg-cover bg-center rounded-sm"
               style={{ backgroundImage: `url(${cafeThumbnail})` }}
             />
+
             <span className="text-xs text-gray-600 truncate">
               {item.meta.cafeName}
             </span>

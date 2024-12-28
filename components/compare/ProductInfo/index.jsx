@@ -16,8 +16,6 @@ export default function ProductInfo({
   usedItemsLoading,
 }) {
   const tabsRef = useRef(null);
-  console.log("product", product);
-  console.log("priceHistory3", priceHistory);
   const handleTabChange = (value) => {
     if (window.innerWidth < 768) {
       window.scrollTo({ top: tabsRef.current.offsetTop, behavior: "smooth" });

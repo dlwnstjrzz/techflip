@@ -1,7 +1,23 @@
+"use client";
+
+import { useState } from "react";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+
 export default function RetailerList({ retailers, total }) {
+  const [includeDelivery, setIncludeDelivery] = useState(false);
+
   // 상위 10개만 필터링
-  console.log("retailers", retailers);
-  const topRetailers = retailers.slice(0, 10);
+
+  const sortedRetailers = retailers
+    .map((retailer) => ({
+      ...retailer,
+      displayPrice: includeDelivery
+        ? retailer.price // 배송비 포함 (원래 price가 이미 배송비 포함)
+        : retailer.price - retailer.delivery.price, // 배송비 미포함
+    }))
+    .sort((a, b) => a.displayPrice - b.displayPrice)
+    .slice(0, 10);
 
   return (
     <div className="space-y-4">
@@ -9,11 +25,20 @@ export default function RetailerList({ retailers, total }) {
         <div className="text-sm text-gray-500">
           가격이 낮은 상위 {retailers.length}개 판매처
         </div>
-        <div className="text-xs text-gray-400">최근 30일 기준</div>
+        <div className="flex items-center gap-2">
+          <Switch
+            id="delivery-toggle"
+            checked={includeDelivery}
+            onCheckedChange={setIncludeDelivery}
+          />
+          <Label htmlFor="delivery-toggle" className="text-sm text-gray-600">
+            배송비 포함
+          </Label>
+        </div>
       </div>
 
       <div className="space-y-3">
-        {topRetailers.map((retailer) => (
+        {sortedRetailers.map((retailer) => (
           <a
             key={retailer.id}
             href={retailer.link}
@@ -50,9 +75,13 @@ export default function RetailerList({ retailers, total }) {
               <div className="flex-1 min-w-0 flex">
                 {/* 배송 정보 영역 */}
                 <div className="">
-                  {retailer.delivery.price === 0 && (
+                  {retailer.delivery.price === 0 ? (
                     <span className="text-xs text-gray-500 whitespace-nowrap">
                       무료배송
+                    </span>
+                  ) : (
+                    <span className="text-xs text-gray-500 whitespace-nowrap">
+                      {retailer.delivery.price.toLocaleString()}원
                     </span>
                   )}
                 </div>
@@ -73,9 +102,14 @@ export default function RetailerList({ retailers, total }) {
                         : "text-blue-600"
                     }`}
                   >
-                    {retailer.price.toLocaleString()}원
+                    {retailer.displayPrice.toLocaleString()}원
                   </div>
                 </div>
+                {includeDelivery && retailer.delivery.price > 0 && (
+                  <div className="text-xs text-gray-500 mt-0.5">
+                    (배송비 {retailer.delivery.price.toLocaleString()}원 포함)
+                  </div>
+                )}
                 <div className="space-y-0.5 mt-1">
                   {retailer.benefits.cardInfo?.length > 0 && (
                     <div className="text-sm text-gray-700">

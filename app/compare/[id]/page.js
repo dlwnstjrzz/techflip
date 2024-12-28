@@ -24,7 +24,7 @@ export default function ComparePage() {
     error: productError,
     setUsedItemsPage,
   } = useProductDetail(params.id);
-  console.log("usedItems", usedItems);
+
   const {
     data: priceHistory,
     loading: priceHistoryLoading,

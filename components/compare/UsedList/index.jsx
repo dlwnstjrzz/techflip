@@ -25,8 +25,7 @@ export default function UsedList({ items = [], pagination, onPageChange }) {
   const filteredItems = useMemo(() => {
     return items[selectedPlatform] || [];
   }, [items, selectedPlatform]);
-  console.log("gdgd", pagination);
-  console.log("items", items);
+
   // 플랫폼별 아이템 수 계산
   const platformCounts = useMemo(() => {
     return {

@@ -35,7 +35,7 @@ export function useProductDetail(productId) {
 
         // 2. 상세 정보 가져오기
         const detail = await getEnuriProductDetail(productId);
-        console.log("detail", detail.data.shopPricelist);
+
         const retailers = detail.data.shopPricelist.map((shop) => ({
           id: shop.shopcode,
           name: shop.shopname,

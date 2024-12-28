@@ -6,7 +6,7 @@ export async function POST(request) {
     const body = await request.json();
     const cleanedQuery = cleanSearchQuery(body.keyword);
     const modelno = body.modelno;
-    console.log("cleanedQuery", cleanedQuery);
+
     const [joongnaResponse, enuriResponse] = await Promise.all([
       // 중고나라 API - 30일
       fetch(
@@ -68,7 +68,6 @@ export async function POST(request) {
       newPrices: enuriData.data.graphDataList.map((item) => item.price),
     };
 
-    console.log("formattedData", formattedData);
     return NextResponse.json(formattedData);
   } catch (error) {
     console.error("Price analysis error:", error);
