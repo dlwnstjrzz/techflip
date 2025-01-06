@@ -1,413 +1,119 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import SearchInput from "@/components/search/SearchInput";
-import { ChevronRight, History, Sparkles, TrendingUp } from "lucide-react";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
 export default function Home() {
-  const router = useRouter();
+  const [trendingKeywords, setTrendingKeywords] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchTrends() {
+      try {
+        const response = await fetch("/api/naver/trend", {
+          method: "POST",
+        });
+        const data = await response.json();
+
+        if (data.results) {
+          console.log(data.results);
+          // 결과를 ratio 기준으로 정렬하고 상위 6개만 선택
+          const sortedKeywords = data.results.map((item) => item.title);
+
+          setTrendingKeywords(sortedKeywords);
+        }
+      } catch (error) {
+        console.error("Failed to fetch trends:", error);
+        // 에러 시 기본 키워드 사용
+        setTrendingKeywords([
+          "아이폰 15",
+          "갤럭시 S24",
+          "맥북 프로",
+          "아이패드",
+          "에어팟",
+          "갤럭시 워치",
+        ]);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    fetchTrends();
+  }, []);
 
   return (
-    <main className="min-h-screen bg-white relative">
-      {/* 배경 효과 개선 */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-24 -left-24 w-[40rem] h-[40rem] bg-blue-100 rounded-full mix-blend-multiply filter blur-3xl opacity-25" />
-        <div className="absolute -top-24 -right-24 w-[40rem] h-[40rem] bg-purple-100 rounded-full mix-blend-multiply filter blur-3xl opacity-25" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[40rem] h-[40rem] bg-blue-50 rounded-full mix-blend-multiply filter blur-3xl opacity-20" />
-      </div>
-
-      {/* 헤더 */}
-      <header className="relative z-10 border-b bg-white/80 backdrop-blur-sm">
-        <div className="container mx-auto px-4 flex justify-center">
-          <div className="h-16 flex items-center">
-            <div className="flex items-center gap-2">
-              <Link
-                href="/"
-                className="flex items-center gap-2 text-2xl font-kanit tracking-tight text-foreground"
-              >
-                DAMOA
-              </Link>
-            </div>
-          </div>
-        </div>
-      </header>
-
-      {/* Hero 섹션 */}
-      <div className="relative">
+    <main className="min-h-screen bg-background">
+      {/* 로고 + 히어로 섹션 */}
+      <section className="relative bg-white pt-20 pb-32">
         <div className="container mx-auto px-4">
-          <div className="relative py-20 flex flex-col items-center text-center">
-            <div className="inline-block mb-8">
-              <div className="relative">
-                <h1 className="text-5xl md:text-7xl font-bold text-gray-900 mb-6">
-                  새상품·중고 가격
-                  <br />
-                  한눈에 비교
-                </h1>
-                <div className="absolute -inset-4 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg blur opacity-25" />
-              </div>
+          <div className="max-w-3xl mx-auto text-center space-y-10">
+            {/* 로고 */}
+            <div className="text-5xl font-kanit tracking-tight text-foreground">
+              DAMOA
             </div>
-            <p className="text-xl md:text-2xl text-gray-800 font-medium mb-12 max-w-3xl">
-              새상품과 중고 가격을 한눈에 비교하고,
+
+            {/* 히어로 텍스트 */}
+            <h1 className="text-4xl md:text-6xl font-bold text-foreground leading-tight">
+              새상품부터 중고까지
               <br />
-              최적의 구매 시점을 찾아보세요.
-            </p>
+              <span className="text-blue-600">한눈에 비교</span>하세요
+            </h1>
 
-            {/* 검색 섹션 */}
-            <div className="w-full max-w-2xl">
-              <div className="relative">
-                <SearchInput className="shadow-lg !py-6 !text-lg !bg-gray-50 hover:!bg-gray-100/80 !rounded-2xl focus-within:!shadow-xl transition-all" />
+            {/* 검색창 */}
+            <div className="max-w-2xl mx-auto pt-4">
+              <SearchInput />
+            </div>
+
+            {/* 인기 검색어 */}
+            <div className="pt-2">
+              <div className="text-sm text-gray-400 mb-3">
+                {isLoading ? "인기 검색어 로딩중..." : "실시간 인기 검색어"}
+              </div>
+              <div className="flex flex-wrap justify-center gap-2">
+                {(isLoading ? Array(6).fill("") : trendingKeywords).map(
+                  (keyword, index) => (
+                    <Link
+                      key={keyword || index}
+                      href={`/search?q=${encodeURIComponent(keyword)}`}
+                      className={`px-4 py-2 bg-gray-50 hover:bg-gray-100 rounded-full text-sm text-gray-600 transition-all ${
+                        isLoading
+                          ? "animate-pulse bg-gray-100 min-w-[100px]"
+                          : ""
+                      }`}
+                    >
+                      {keyword || "　"}
+                    </Link>
+                  )
+                )}
               </div>
             </div>
-
-            {/* 인기 검색어 - 간격 조정 */}
-            <div className="mt-6 flex flex-wrap gap-2 justify-center">
-              {["iPhone 15", "Galaxy S24", "MacBook Pro"].map((item) => (
-                <button
-                  key={item}
-                  onClick={() =>
-                    router.push(`/search?q=${encodeURIComponent(item)}`)
-                  }
-                  className="px-4 py-2 rounded-full bg-white shadow-sm hover:shadow-md text-sm text-gray-600 hover:text-gray-900 transition-all border border-gray-200/50 hover:border-gray-300 flex items-center gap-1 group"
-                >
-                  {item}
-                  <ChevronRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
-                </button>
-              ))}
-            </div>
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* 브랜드 로고 슬라이더 - 무한 스크롤 수정 */}
-      <div className="w-full overflow-hidden bg-white/30 backdrop-blur-sm py-16">
-        <p className="text-center text-gray-500 mb-10 text-lg">
-          다양한 브랜드의 제품을 비교해보세요!
-        </p>
-        <div className="flex flex-col gap-8">
-          {/* 첫 번째 줄 */}
-          <div className="flex animate-scroll">
-            <div className="flex items-center gap-12 mx-8">
-              {[...logos, ...logos].map((logo, i) => (
-                <img
-                  key={`${logo.alt}-${i}`}
-                  src={logo.src}
-                  alt={logo.alt}
-                  className={`grayscale hover:grayscale-0 transition-all ${
-                    logo.height === 6 ? "h-6" : "h-8"
-                  }`}
-                />
-              ))}
-            </div>
-          </div>
-
-          {/* 두 번째 줄 */}
-          <div className="flex animate-scroll-reverse">
-            <div className="flex items-center gap-12 mx-8">
-              {[...logos.reverse(), ...logos].map((logo, i) => (
-                <img
-                  key={`${logo.alt}-reverse-${i}`}
-                  src={logo.src}
-                  alt={logo.alt}
-                  className={`grayscale hover:grayscale-0 transition-all ${
-                    logo.height === 6 ? "h-6" : "h-8"
-                  }`}
-                />
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* 핵심 기능 소개 - 제목 수정 */}
-      <div className="container mx-auto px-4 py-24">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600">
-              다모아의 핵심 기능
+      {/* 기능 소개 이미지 */}
+      <section className="py-24 bg-gray-50">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto text-center">
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">
+              어떻게 사용하나요?
             </h2>
-            <p className="mt-4 text-lg text-gray-600">
-              새상품부터 중고까지 한눈에 비교하세요
+            <p className="text-gray-500 mb-12">
+              새상품 최저가부터 중고 시세까지 한눈에 비교하고,
+              <br />
+              실시간 가격 변동 그래프로 최적의 구매 시점을 찾아보세요
             </p>
-          </div>
-
-          {/* 기능 카개 이미지 그리드 */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {/* 가격 변동 추적 */}
-            <div className="group bg-white rounded-3xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 border border-gray-100">
-              {/* 모바일 버전 */}
-              <div className="md:hidden">
-                <div className="overflow-hidden">
-                  <img
-                    src="/images/price-history.png"
-                    alt="가격 변동 그래프 예시"
-                    className="w-full"
-                  />
-                </div>
-                <div className="p-6">
-                  <div className="flex items-center gap-2 mb-3">
-                    <div className="p-2 bg-purple-100 rounded-lg">
-                      <History className="w-4 h-4 text-purple-600" />
-                    </div>
-                    <h3 className="text-lg font-bold text-gray-900">
-                      가격 변동 추적
-                    </h3>
-                  </div>
-                  <p className="text-sm text-gray-600">
-                    3개월간의 가격 변화를 확인하고 최적의 구매 타이밍을
-                    찾아보세요
-                  </p>
-                </div>
-              </div>
-
-              {/* 데스크톱 버전 */}
-              <div className="hidden md:block">
-                <div className="p-8 bg-gradient-to-b from-white to-purple-50/50 border-b border-purple-100">
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="p-2.5 bg-purple-100 rounded-xl group-hover:scale-110 transition-transform duration-300">
-                      <History className="w-5 h-5 text-purple-600" />
-                    </div>
-                    <h3 className="text-xl font-bold text-gray-900 group-hover:text-purple-700 transition-colors">
-                      가격 변동 추적
-                    </h3>
-                  </div>
-                  <p className="text-gray-600 leading-relaxed">
-                    <span className="font-medium text-purple-900/80">
-                      3개월간의 가격 변화
-                    </span>
-                    를 확인하고
-                    <br />
-                    <span className="font-medium text-purple-900/80">
-                      최적의 구매 타이밍
-                    </span>
-                    을 찾아보세요
-                  </p>
-                </div>
-                <div className="relative p-4 bg-white/80">
-                  <div className="rounded-xl overflow-hidden border border-purple-100 shadow-sm">
-                    <img
-                      src="/images/price-history.png"
-                      alt="가격 변동 그래프 예시"
-                      className="w-full object-contain group-hover:scale-105 transition-transform duration-300"
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* 실시간 가격 비교 */}
-            <div className="group bg-white rounded-3xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 border border-gray-100">
-              {/* 모바일 버전 */}
-              <div className="md:hidden">
-                <div className="overflow-hidden">
-                  <img
-                    src="/images/price-comparison.png"
-                    alt="가격 비교 화면 예시"
-                    className="w-full"
-                  />
-                </div>
-                <div className="p-6">
-                  <div className="flex items-center gap-2 mb-3">
-                    <div className="p-2 bg-blue-100 rounded-lg">
-                      <Sparkles className="w-4 h-4 text-blue-600" />
-                    </div>
-                    <h3 className="text-lg font-bold text-gray-900">
-                      실시간 가격 비교
-                    </h3>
-                  </div>
-                  <p className="text-sm text-gray-600">
-                    모든 쇼핑몰의 가격을 실시간으로 비교하고 최저가로 구매하세요
-                  </p>
-                </div>
-              </div>
-
-              {/* 데스크톱 버전 */}
-              <div className="hidden md:block">
-                <div className="p-8 bg-gradient-to-b from-white to-blue-50/50 border-b border-blue-100">
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="p-2.5 bg-blue-100 rounded-xl group-hover:scale-110 transition-transform duration-300">
-                      <Sparkles className="w-5 h-5 text-blue-600" />
-                    </div>
-                    <h3 className="text-xl font-bold text-gray-900 group-hover:text-blue-700 transition-colors">
-                      실시간 가격 비교
-                    </h3>
-                  </div>
-                  <p className="text-gray-600 leading-relaxed">
-                    <span className="font-medium text-blue-900/80">
-                      모든 쇼핑몰의 가격
-                    </span>
-                    을 실시간으로
-                    <br />
-                    비교하고{" "}
-                    <span className="font-medium text-blue-900/80">
-                      최저가로 구매
-                    </span>
-                    하세요
-                  </p>
-                </div>
-                <div className="relative p-4 bg-white/80">
-                  <div className="rounded-xl overflow-hidden border border-blue-100 shadow-sm">
-                    <img
-                      src="/images/price-comparison.png"
-                      alt="가격 비교 화면 예시"
-                      className="w-full object-contain group-hover:scale-105 transition-transform duration-300"
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* 중고 시세 ��인 */}
-            <div className="group bg-white rounded-3xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 border border-gray-100">
-              {/* 모바일 버전 */}
-              <div className="md:hidden">
-                <div className="overflow-hidden">
-                  <img
-                    src="/images/used-price.png"
-                    alt="중고 시세 화면 예시"
-                    className="w-full"
-                  />
-                </div>
-                <div className="p-6">
-                  <div className="flex items-center gap-2 mb-3">
-                    <div className="p-2 bg-green-100 rounded-lg">
-                      <TrendingUp className="w-4 h-4 text-green-600" />
-                    </div>
-                    <h3 className="text-lg font-bold text-gray-900">
-                      중고 시세 확인
-                    </h3>
-                  </div>
-                  <p className="text-sm text-gray-600">
-                    중고나라·번개장터의 실시간 중고 시세를 확인하세요
-                  </p>
-                </div>
-              </div>
-
-              {/* 데스크톱 버전 */}
-              <div className="hidden md:block">
-                <div className="p-8 bg-gradient-to-b from-white to-green-50/50 border-b border-green-100">
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="p-2.5 bg-green-100 rounded-xl group-hover:scale-110 transition-transform duration-300">
-                      <TrendingUp className="w-5 h-5 text-green-600" />
-                    </div>
-                    <h3 className="text-xl font-bold text-gray-900 group-hover:text-green-700 transition-colors">
-                      중고 시세 확인
-                    </h3>
-                  </div>
-                  <p className="text-gray-600 leading-relaxed">
-                    <span className="font-medium text-green-900/80">
-                      중고나라·번개장터
-                    </span>
-                    의
-                    <br />
-                    <span className="font-medium text-green-900/80">
-                      실시간 중고 시세
-                    </span>
-                    를 확인하세요
-                  </p>
-                </div>
-                <div className="relative p-4 bg-white/80">
-                  <div className="rounded-xl overflow-hidden border border-green-100 shadow-sm">
-                    <img
-                      src="/images/used-price.png"
-                      alt="중고 시세 화면 예시"
-                      className="w-full object-contain group-hover:scale-105 transition-transform duration-300"
-                    />
-                  </div>
-                </div>
-              </div>
+            <div className="rounded-2xl overflow-hidden shadow-xl border bg-white">
+              <img
+                src="/images/introduce.png"
+                alt="주요 기능 미리보기"
+                className="w-full"
+              />
             </div>
           </div>
         </div>
-      </div>
+      </section>
     </main>
   );
 }
-
-// 로고 데이터
-const logos = [
-  {
-    //
-    src: "https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg",
-    alt: "Apple",
-    height: 8,
-  },
-  {
-    //
-    src: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b4/Samsung_wordmark.svg/2880px-Samsung_wordmark.svg.png",
-    alt: "Samsung",
-    height: 6,
-  },
-  {
-    //
-    src: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8d/LG_logo_%282014%29.svg/400px-LG_logo_%282014%29.svg.png",
-    alt: "LG",
-    height: 8,
-  },
-  {
-    //
-    src: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/85/Intel_logo_2023.svg/2880px-Intel_logo_2023.svg.png",
-    alt: "Intel",
-    height: 6,
-  },
-  {
-    //
-    src: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7c/AMD_Logo.svg/2880px-AMD_Logo.svg.png",
-    alt: "AMD",
-    height: 6,
-  },
-  {
-    //
-    src: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/18/Dell_logo_2016.svg/1280px-Dell_logo_2016.svg.png",
-    alt: "Dell",
-    height: 8,
-  },
-  {
-    //
-    src: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ad/HP_logo_2012.svg/1200px-HP_logo_2012.svg.png",
-    alt: "HP",
-    height: 8,
-  },
-  {
-    //
-    src: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b8/Lenovo_logo_2015.svg/1280px-Lenovo_logo_2015.svg.png",
-    alt: "Lenovo",
-    height: 6,
-  },
-  {
-    //
-    src: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/Sony_logo.svg/2880px-Sony_logo.svg.png",
-    alt: "Sony",
-    height: 6,
-  },
-  {
-    //
-    src: "https://upload.wikimedia.org/wikipedia/commons/9/96/Microsoft_logo_%282012%29.svg",
-    alt: "Microsoft",
-    height: 8,
-  },
-  {
-    //
-    src: "https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg",
-    alt: "Google",
-    height: 8,
-  },
-  {
-    //
-    src: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/NVIDIA_logo.svg/2880px-NVIDIA_logo.svg.png",
-    alt: "NVIDIA",
-    height: 6,
-  },
-  {
-    //
-    src: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/ASUS_Logo.svg/440px-ASUS_Logo.svg.png",
-    alt: "ASUS",
-    height: 6,
-  },
-  {
-    //
-    src: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/00/Acer_2011.svg/600px-Acer_2011.svg.png",
-    alt: "Acer",
-    height: 6,
-  },
-];

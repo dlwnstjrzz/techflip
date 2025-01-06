@@ -72,10 +72,10 @@ export async function GET(request) {
     return NextResponse.json({
       items: usedItems,
       meta: {
-        total: data.num_found,
+        total: usedItems.length,
         currentPage: page,
         pageSize: pageSize,
-        totalPages: Math.ceil(data.num_found / pageSize),
+        totalPages: Math.ceil(usedItems.length / pageSize),
         platform: {
           bunjang: usedItems.length,
         },

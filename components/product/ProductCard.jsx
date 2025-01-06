@@ -12,7 +12,7 @@ export default function ProductCard({ product }) {
   const specRef = useRef(null);
   const toggleRef = useRef(null);
   const { avgPrice, loading } = useAvgPrice(product.koreanName);
-
+  console.log(13222, avgPrice);
   // 모바일 여부 체크
   const checkMobile = useCallback(() => {
     setIsMobile(window.innerWidth < 768);
@@ -201,7 +201,7 @@ export default function ProductCard({ product }) {
               </div>
             </div>
 
-            {/* 모바일 버전 가격변동 정��도 동일하게 수정 */}
+            {/* 모바일 버전 가격변동 정보 */}
             <div className="bg-gray-50 rounded-lg px-3 py-2">
               <div className="flex items-center gap-1">
                 <div className="text-xs text-gray-500">가격변동</div>
