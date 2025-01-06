@@ -38,7 +38,7 @@ export async function POST() {
     console.log(data);
     // 데이터 구조 변환
     const results = data.ranks
-      .slice(0, 6) // 상위 6개만 선택
+      .slice(0, 10) // 상위 10개 선택
       .map((item) => ({
         title: item.keyword,
         rank: item.rank,

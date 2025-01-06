@@ -1,6 +1,6 @@
 "use client";
 
-import SearchInput from "@/components/search/SearchInput";
+import MainSearchInput from "@/components/search/MainSearchInput";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
@@ -61,28 +61,57 @@ export default function Home() {
             </h1>
 
             {/* 검색창 */}
-            <div className="max-w-2xl mx-auto pt-4">
-              <SearchInput />
+            <div className="max-w-2xl mx-auto pt-8 px-4">
+              <div className="relative group">
+                <div
+                  className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-violet-600 
+                  rounded-lg blur opacity-25 group-hover:opacity-40 transition duration-200"
+                />
+                <MainSearchInput />
+              </div>
+              <p className="mt-3 text-center text-sm text-gray-500">
+                전자제품의 새상품부터 중고까지 한 번에 검색해보세요
+              </p>
             </div>
 
             {/* 인기 검색어 */}
-            <div className="pt-2">
-              <div className="text-sm text-gray-400 mb-3">
+            <div className="pt-12">
+              <div className="flex items-center justify-center gap-2 text-sm text-gray-400 mb-4">
+                <div className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse" />
                 {isLoading ? "인기 검색어 로딩중..." : "실시간 인기 검색어"}
+                <div className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse" />
               </div>
-              <div className="flex flex-wrap justify-center gap-2">
-                {(isLoading ? Array(6).fill("") : trendingKeywords).map(
+              <div className="grid grid-cols-2 md:grid-cols-5 gap-2.5 max-w-4xl mx-auto px-4">
+                {(isLoading ? Array(10).fill("") : trendingKeywords).map(
                   (keyword, index) => (
                     <Link
                       key={keyword || index}
                       href={`/search?q=${encodeURIComponent(keyword)}`}
-                      className={`px-4 py-2 bg-gray-50 hover:bg-gray-100 rounded-full text-sm text-gray-600 transition-all ${
-                        isLoading
-                          ? "animate-pulse bg-gray-100 min-w-[100px]"
-                          : ""
-                      }`}
+                      className={`group relative px-5 py-2.5 bg-white border hover:border-blue-500 hover:text-blue-600 
+                        rounded-full text-sm text-gray-600 transition-all duration-200 
+                        hover:shadow-md hover:-translate-y-0.5 ${
+                          isLoading
+                            ? "animate-pulse bg-gray-50 min-w-[120px]"
+                            : ""
+                        }`}
                     >
-                      {keyword || "　"}
+                      {!isLoading && (
+                        <span
+                          className="absolute -top-2 -left-1 flex items-center justify-center 
+                          w-5 h-5 rounded-full bg-blue-500 text-white text-xs font-medium"
+                        >
+                          {index + 1}
+                        </span>
+                      )}
+                      <span className="truncate block text-center">
+                        {keyword || "　"}
+                      </span>
+                      {!isLoading && (
+                        <span
+                          className="absolute inset-0 rounded-full bg-blue-50 opacity-0 
+                          group-hover:opacity-10 transition-opacity duration-200"
+                        />
+                      )}
                     </Link>
                   )
                 )}

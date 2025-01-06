@@ -15,7 +15,7 @@ export default function Header({ showOnlyInSubPages }) {
   const isComparePage = pathname.startsWith("/compare/");
   const [mounted, setMounted] = useState(false);
   const [recentSearches, setRecentSearches] = useState([]);
-
+  console.log("pathname", pathname);
   useEffect(() => {
     setMounted(true);
     setRecentSearches(getRecentSearches());
@@ -26,7 +26,10 @@ export default function Header({ showOnlyInSubPages }) {
   };
 
   // 메인 페이지에서는 헤더를 숨김
-  if (showOnlyInSubPages && pathname === "/") {
+  if (
+    (showOnlyInSubPages && pathname === "/") ||
+    pathname.includes("compare")
+  ) {
     return null;
   }
 
