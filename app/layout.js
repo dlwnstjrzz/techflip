@@ -1,6 +1,7 @@
 import "./globals.css";
 import Header from "@/components/layout/Header";
 import localFont from "next/font/local";
+import Script from "next/script";
 
 const pretendard = localFont({
   src: "../public/fonts/PretendardVariable.woff2",
@@ -52,6 +53,20 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="ko" className={`${pretendard.variable} ${kanit.variable}`}>
+      <head>
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-F012CFLT0X"
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-F012CFLT0X');
+          `}
+        </Script>
+      </head>
       <body className="font-pretendard">
         <Header showOnlyInSubPages />
         {children}
