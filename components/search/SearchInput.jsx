@@ -8,19 +8,30 @@ import { useDebounce } from "@/hooks/useDebounce";
 import { addRecentSearch } from "@/lib/recentSearches";
 import { cn } from "@/lib/utils";
 
+function highlightMatch(text, query) {
+  if (!query) return text;
+  const regex = new RegExp(`(${query})`, "gi");
+  const parts = text.split(regex);
+
+  return parts.map((part, i) =>
+    regex.test(part) ? (
+      <span key={i} className="text-blue-600 font-medium">
+        {part}
+      </span>
+    ) : (
+      part
+    )
+  );
+}
+
 export default function SearchInput({ className }) {
   const router = useRouter();
-  const inputRef = useRef(null);
-  const [mounted, setMounted] = useState(false);
   const [query, setQuery] = useState("");
   const [suggestions, setSuggestions] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
   const debouncedQuery = useDebounce(query, 300);
   const [isSearching, setIsSearching] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const inputRef = useRef();
 
   useEffect(() => {
     const getSuggestions = async () => {
@@ -52,21 +63,6 @@ export default function SearchInput({ className }) {
     }
   };
 
-  if (!mounted) {
-    return (
-      <div className="relative w-full">
-        <div className="relative">
-          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-          <Input
-            type="search"
-            placeholder="검색어를 입력하세요..."
-            className="pl-8"
-          />
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="relative w-full">
       <form onSubmit={handleSubmit}>
@@ -91,13 +87,18 @@ export default function SearchInput({ className }) {
         </div>
       </form>
 
-      {/* 자동완성 드롭다운 - 단순 목록 */}
+      {/* 자동완성 드롭다운 */}
       {!isSearching && isOpen && suggestions.length > 0 && (
-        <div className="absolute top-full w-full mt-1 py-2 bg-white rounded-lg border shadow-lg z-50">
+        <div
+          className="absolute top-full w-full mt-1 py-1.5 bg-white/95 rounded-lg border shadow-xl z-50 
+          border-gray-200/50 backdrop-blur-sm ring-1 ring-black/5"
+        >
           {suggestions.map((suggestion) => (
             <div
               key={suggestion.id}
-              className="px-4 py-2 hover:bg-gray-50 cursor-pointer"
+              className="px-4 py-2.5 hover:bg-gray-50/80 cursor-pointer group transition-all
+                relative after:absolute after:inset-x-4 after:bottom-0 after:h-[1px] 
+                after:bg-gray-100 last:after:hidden"
               onClick={() => {
                 setIsSearching(true);
                 setQuery(suggestion.text);
@@ -107,21 +108,32 @@ export default function SearchInput({ className }) {
                 setSuggestions([]);
               }}
             >
-              <div className="flex items-center gap-2">
-                <div className="text-sm flex-1">
-                  {suggestion.text}
+              <div>
+                <div
+                  className="text-[0.925rem] flex-1 text-gray-600 group-hover:text-gray-900
+                  transition-colors flex items-center"
+                >
+                  {highlightMatch(suggestion.text, query)}
                   {suggestion.isPopular && (
-                    <span className="ml-2 text-xs text-red-500 font-medium">
+                    <span
+                      className="text-xs ml-2 bg-red-50 text-red-600 px-1.5 py-0.5 rounded-full 
+                      font-medium inline-flex items-center group-hover:bg-red-100/80 transition-colors"
+                    >
                       인기
                     </span>
                   )}
                 </div>
                 {suggestion.type === "history" && suggestion.date && (
-                  <div className="text-xs text-gray-400">{suggestion.date}</div>
+                  <div className="text-xs text-gray-400 mt-0.5 pl-0.5">
+                    {suggestion.date}
+                  </div>
                 )}
               </div>
             </div>
           ))}
+          <div className="px-4 py-2 mt-0.5 text-[0.7rem] text-gray-400 border-t border-gray-100">
+            문의사항이 있다면 qny123@naver.com으로 연락주세요
+          </div>
         </div>
       )}
     </div>
