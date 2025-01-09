@@ -12,7 +12,6 @@ export default function ProductCard({ product }) {
   const specRef = useRef(null);
   const toggleRef = useRef(null);
   const { avgPrice, loading } = useAvgPrice(product.koreanName);
-  console.log(13222, avgPrice);
   // 모바일 여부 체크
   const checkMobile = useCallback(() => {
     setIsMobile(window.innerWidth < 768);

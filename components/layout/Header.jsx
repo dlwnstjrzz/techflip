@@ -8,14 +8,12 @@ import SearchInput from "@/components/search/SearchInput";
 import RecentSearches from "@/components/search/RecentSearches";
 import { cn } from "@/lib/utils";
 import { getRecentSearches } from "@/lib/recentSearches";
-import Image from "next/image";
 export default function Header({ showOnlyInSubPages }) {
   const router = useRouter();
   const pathname = usePathname();
   const isComparePage = pathname.startsWith("/compare/");
   const [mounted, setMounted] = useState(false);
   const [recentSearches, setRecentSearches] = useState([]);
-  console.log("pathname", pathname);
   useEffect(() => {
     setMounted(true);
     setRecentSearches(getRecentSearches());
@@ -59,7 +57,7 @@ export default function Header({ showOnlyInSubPages }) {
                 href="/"
                 className="flex items-center gap-2 font-kanit tracking-tight text-foreground"
               >
-                DAMOA
+                MOABA
                 {/* <Image
                   width={250}
                   height={40}

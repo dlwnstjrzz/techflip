@@ -4,7 +4,6 @@ import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { fetchSuggestions } from "@/app/data/mockSuggestions";
 import { useDebounce } from "@/hooks/useDebounce";
 import { addRecentSearch } from "@/lib/recentSearches";
 import { cn } from "@/lib/utils";
@@ -30,7 +29,11 @@ export default function SearchInput({ className }) {
         setIsOpen(false);
         return;
       }
-      const results = await fetchSuggestions(debouncedQuery);
+      const response = await fetch(
+        `/api/enuri/related?q=${encodeURIComponent(debouncedQuery)}`
+      );
+      const data = await response.json();
+      const results = data.suggestions || [];
       setSuggestions(results);
       setIsOpen(true);
     };
@@ -104,11 +107,18 @@ export default function SearchInput({ className }) {
                 setSuggestions([]);
               }}
             >
-              <div className="text-sm">{suggestion.text}</div>
-              <div className="text-xs text-muted-foreground">
-                {suggestion.type === "brand" && "브랜드"}
-                {suggestion.type === "product" && "제품"}
-                {suggestion.type === "trending" && "인기 검색어"}
+              <div className="flex items-center gap-2">
+                <div className="text-sm flex-1">
+                  {suggestion.text}
+                  {suggestion.isPopular && (
+                    <span className="ml-2 text-xs text-red-500 font-medium">
+                      인기
+                    </span>
+                  )}
+                </div>
+                {suggestion.type === "history" && suggestion.date && (
+                  <div className="text-xs text-gray-400">{suggestion.date}</div>
+                )}
               </div>
             </div>
           ))}

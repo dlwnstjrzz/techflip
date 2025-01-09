@@ -62,66 +62,61 @@ export default function SearchResults() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      {/* 새 상품 섹션 */}
-      <section className="mb-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          {products.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
-        </div>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        {products.map((product) => (
+          <ProductCard key={product.id} product={product} />
+        ))}
+      </div>
 
-        {/* 페이지네이션 */}
-        {pagination && (
-          <div className="mt-8 flex items-center justify-center gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => handlePageChange(pagination.currentPage - 1)}
-              disabled={pagination.currentPage === 1}
-            >
-              <ChevronLeft className="h-4 w-4" />
-            </Button>
+      {/* 페이지네이션 */}
+      {pagination && (
+        <div className="mt-8 flex items-center justify-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => handlePageChange(pagination.currentPage - 1)}
+            disabled={pagination.currentPage === 1}
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </Button>
 
-            {/* 페이지 번호 */}
-            <div className="flex items-center gap-1">
-              {Array.from({ length: pagination.totalPages }, (_, i) => i + 1)
-                .filter(
-                  (pageNum) =>
-                    pageNum === 1 ||
-                    pageNum === pagination.totalPages ||
-                    Math.abs(pageNum - pagination.currentPage) <= 2
-                )
-                .map((pageNum, index, array) => (
-                  <Fragment key={pageNum}>
-                    {index > 0 && array[index - 1] !== pageNum - 1 && (
-                      <span className="px-2 text-gray-400">...</span>
-                    )}
-                    <Button
-                      variant={
-                        pageNum === pagination.currentPage
-                          ? "default"
-                          : "outline"
-                      }
-                      size="sm"
-                      onClick={() => handlePageChange(pageNum)}
-                    >
-                      {pageNum}
-                    </Button>
-                  </Fragment>
-                ))}
-            </div>
-
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => handlePageChange(pagination.currentPage + 1)}
-              disabled={pagination.currentPage === pagination.totalPages}
-            >
-              <ChevronRight className="h-4 w-4" />
-            </Button>
+          {/* 페이지 번호 */}
+          <div className="flex items-center gap-1">
+            {Array.from({ length: pagination.totalPages }, (_, i) => i + 1)
+              .filter(
+                (pageNum) =>
+                  pageNum === 1 ||
+                  pageNum === pagination.totalPages ||
+                  Math.abs(pageNum - pagination.currentPage) <= 2
+              )
+              .map((pageNum, index, array) => (
+                <Fragment key={pageNum}>
+                  {index > 0 && array[index - 1] !== pageNum - 1 && (
+                    <span className="px-2 text-gray-400">...</span>
+                  )}
+                  <Button
+                    variant={
+                      pageNum === pagination.currentPage ? "default" : "outline"
+                    }
+                    size="sm"
+                    onClick={() => handlePageChange(pageNum)}
+                  >
+                    {pageNum}
+                  </Button>
+                </Fragment>
+              ))}
           </div>
-        )}
-      </section>
+
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => handlePageChange(pagination.currentPage + 1)}
+            disabled={pagination.currentPage === pagination.totalPages}
+          >
+            <ChevronRight className="h-4 w-4" />
+          </Button>
+        </div>
+      )}
     </div>
   );
 }

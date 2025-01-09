@@ -16,7 +16,7 @@ export function useProductDetail(productId) {
     isLoading: usedItemsLoading,
     hasError: usedItemsError,
     setPage,
-  } = useUsedItems(product?.name ? cleanSearchQuery(product.name) : null);
+  } = useUsedItems(product?.name ? product.name : null);
 
   const {
     data: priceHistory,

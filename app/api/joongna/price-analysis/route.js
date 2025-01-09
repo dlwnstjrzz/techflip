@@ -4,7 +4,7 @@ import { cleanSearchQuery } from "@/lib/utils";
 export async function POST(request) {
   try {
     const body = await request.json();
-    const cleanedQuery = cleanSearchQuery(body.keyword);
+
     const modelno = body.modelno;
 
     const [joongnaResponse, enuriResponse] = await Promise.all([
@@ -26,7 +26,7 @@ export async function POST(request) {
               "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
           },
           body: JSON.stringify({
-            searchWord: cleanedQuery,
+            searchWord: body.keyword,
             productPriceSize: 1,
             dateRange: 30,
             priceType: 1,
@@ -48,6 +48,13 @@ export async function POST(request) {
       enuriResponse.json(),
     ]);
 
+    const firstMonth = parseInt(
+      enuriData.data.graphDataList[0].date_text.split(".")[0]
+    );
+    const lastMonth = new Date().getMonth() + 1;
+    const yearChanged = lastMonth < firstMonth;
+    const currentYear = new Date().getFullYear();
+
     // 우리 서비스 형식으로 변환
     const formattedData = {
       // 중고나라 데이터 (30일)
@@ -58,13 +65,21 @@ export async function POST(request) {
         (item) => item.avgPrice
       ),
       // 에누리 데이터 (3개월)
-      newDates: enuriData.data.graphDataList
-        .map((item) => {
-          const [month, day] = item.date_text.split(".");
-          if (!month || !day) return null;
-          return `2024-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
-        })
-        .filter(Boolean),
+      newDates: enuriData.data.graphDataList.reduce((acc, item) => {
+        const [month, day] = item.date_text.split(".");
+        if (!month || !day) return acc;
+
+        const currentMonth = parseInt(month);
+
+        // 연도가 바뀌는 데이터라면 마지막 월보다 큰 월은 작년 데이터
+        const year =
+          yearChanged && currentMonth > lastMonth
+            ? currentYear - 1
+            : currentYear;
+
+        acc.push(`${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`);
+        return acc;
+      }, []),
       newPrices: enuriData.data.graphDataList.map((item) => item.price),
     };
 

@@ -112,9 +112,13 @@ export default function RetailerList({ retailers, total }) {
                 )}
                 <div className="space-y-0.5 mt-1">
                   {retailer.benefits.cardInfo?.length > 0 && (
-                    <div className="text-sm text-gray-700">
-                      {retailer.benefits.cardname}&nbsp;
-                      {retailer.benefits.cardPrice.toLocaleString()}원
+                    <div className="text-sm text-gray-700 text-right">
+                      <span className="inline-block max-w-[100px] md:max-w-[200px] lg:max-w-none truncate align-bottom">
+                        {retailer.benefits.cardname}
+                      </span>
+                      <span className="inline-block">
+                        &nbsp;{retailer.benefits.cardPrice.toLocaleString()}원
+                      </span>
                     </div>
                   )}
                 </div>

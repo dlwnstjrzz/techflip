@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { getBaseSearchQuery } from "@/lib/utils";
+import { getBaseSearchQuery, cleanSearchQuery } from "@/lib/utils";
 
 export function useUsedItems(query) {
   const [state, setState] = useState({
@@ -59,7 +59,7 @@ export function useUsedItems(query) {
 
       try {
         // 첫 번째 시도
-        let result = await fetchItems(query);
+        let result = await fetchItems(cleanSearchQuery(query));
 
         // 결과가 없으면 모델명 제거 후 두 번째 시도
         if (

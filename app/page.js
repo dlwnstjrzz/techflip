@@ -17,7 +17,6 @@ export default function Home() {
         const data = await response.json();
 
         if (data.results) {
-          console.log(data.results);
           // 결과를 ratio 기준으로 정렬하고 상위 6개만 선택
           const sortedKeywords = data.results.map((item) => item.title);
 
@@ -50,7 +49,7 @@ export default function Home() {
           <div className="max-w-3xl mx-auto text-center space-y-10">
             {/* 로고 */}
             <div className="text-5xl font-kanit tracking-tight text-foreground">
-              DAMOA
+              MOABA
             </div>
 
             {/* 히어로 텍스트 */}

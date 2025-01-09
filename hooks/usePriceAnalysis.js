@@ -37,12 +37,10 @@ export function usePriceAnalysis(productName, modelno) {
     async function getPriceAnalysis() {
       try {
         const cleanedQuery = cleanSearchQuery(productName);
-        console.log("First attempt with:", cleanedQuery);
         let result = await fetchAnalysis(cleanedQuery);
-
+        console.log("Result:", result);
         if (!result || !result.usedPrices) {
           const baseQuery = getBaseSearchQuery(productName);
-          console.log("Second attempt with:", baseQuery);
           result = await fetchAnalysis(baseQuery);
         }
 

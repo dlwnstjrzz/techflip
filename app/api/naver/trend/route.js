@@ -35,7 +35,6 @@ export async function POST() {
     }
 
     const data = await response.json();
-    console.log(data);
     // 데이터 구조 변환
     const results = data.ranks
       .slice(0, 10) // 상위 10개 선택
