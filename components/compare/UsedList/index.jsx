@@ -52,7 +52,7 @@ export default function UsedList({ items = [], pagination, onPageChange }) {
   const currentPagination = pagination?.[selectedPlatform];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6" ref={listRef}>
       {/* 플랫폼 필터 */}
       <div className="flex justify-center">
         <div className="inline-flex p-1 bg-gray-100/80 rounded-xl">
@@ -87,7 +87,7 @@ export default function UsedList({ items = [], pagination, onPageChange }) {
       </div>
 
       {/* 상품 목록 */}
-      <div ref={listRef}>
+      <div>
         {filteredItems.length > 0 ? (
           <div className="grid grid-cols-2 gap-4">
             {filteredItems.map((item) => (
