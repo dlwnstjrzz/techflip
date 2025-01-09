@@ -13,14 +13,21 @@ const kanit = localFont({
 });
 
 export const metadata = {
-  title: "DAMOA | 새상품·중고 가격 비교",
-  description: "새 제품과 중고 제품을 한 눈에 비교하세요!",
-  // metadataBase: new URL("https://damoa.vercel.app"),
-  icons: {
-    icon: "/icon.ico",
-    shortcut: "/favicon-16x16.png",
-    apple: "/apple-touch-icon.png",
+  title: "모아바 | 전자제품 가격비교",
+  description: "모아바에서 새상품부터 중고까지 한눈에 비교하세요!",
+  manifest: "/manifest.json",
+  themeColor: "#FFFFFF",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "모아바",
   },
+  icons: {
+    icon: "/icons/favicon.ico",
+    shortcut: "/icons/favicon-16x16.png",
+    apple: "/icons/apple-icon.png",
+  },
+  // metadataBase: new URL("https://damoa.vercel.app"),
   // openGraph: {
   //   title: "DAMOA - 새상품·중고 가격 비교",
   //   description:

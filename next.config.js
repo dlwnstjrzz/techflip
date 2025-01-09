@@ -1,5 +1,12 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {
+const withPWA = require("next-pwa")({
+  dest: "public",
+  register: true,
+  skipWaiting: true,
+  disable: process.env.NODE_ENV === "development",
+});
+
+const config = {
   images: {
     remotePatterns: [
       {
@@ -7,6 +14,7 @@ const nextConfig = {
         hostname: "**",
       },
     ],
+    domains: ["shopping-phinf.pstatic.net"],
   },
   async headers() {
     return [
@@ -23,4 +31,4 @@ const nextConfig = {
   },
 };
 
-module.exports = nextConfig;
+module.exports = withPWA(config);
