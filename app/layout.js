@@ -39,9 +39,9 @@ export const metadata = {
     siteName: "모아바",
     images: [
       {
-        url: "/icons/icon-192x192.png",
-        width: 192,
-        height: 192,
+        url: "/icons/og-logo.png",
+        width: 1200,
+        height: 630,
         alt: "모아바 - 전자제품 가격비교",
       },
     ],
@@ -51,7 +51,7 @@ export const metadata = {
     title: "모아바 | 전자제품 가격비교",
     description:
       "새상품과 중고 가격을 한눈에 비교하고, 최적의 구매 시점을 찾아보세요.",
-    images: ["/icons/icon-192x192.png"],
+    images: ["/icons/og-logo.png"],
     creator: "@moaba",
   },
   robots: {
