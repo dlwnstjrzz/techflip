@@ -28,26 +28,40 @@ export const metadata = {
     shortcut: "/icons/favicon-16x16.png",
     apple: "/icons/apple-icon.png",
   },
-  // metadataBase: new URL("https://damoa.vercel.app"),
-  // openGraph: {
-  //   title: "DAMOA - 새상품·중고 가격 비교",
-  //   description:
-  //     "새상품과 중고 가격을 한눈에 비교하고, 최적의 구매 시점을 찾아보세요.",
-  //   images: [
-  //     {
-  //       url: "/og-image.png",
-  //       width: 1200,
-  //       height: 630,
-  //     },
-  //   ],
-  // },
-  // twitter: {
-  //   card: "summary_large_image",
-  //   title: "DAMOA - 새상품·중고 가격 비교",
-  //   description:
-  //     "새상품과 중고 가격을 한눈에 비교하고, 최적의 구매 시점을 찾아보세요.",
-  //   images: ["/og-image.png"],
-  // },
+  metadataBase: new URL("https://moaba.it"),
+  openGraph: {
+    title: "모아바 | 전자제품 가격비교",
+    description:
+      "새상품과 중고 가격을 한눈에 비교하고, 최적의 구매 시점을 찾아보세요.",
+    type: "website",
+    locale: "ko_KR",
+    url: "https://moaba.it",
+    siteName: "모아바",
+    images: [
+      {
+        url: "/icons/icon-192x192.png",
+        width: 192,
+        height: 192,
+        alt: "모아바 - 전자제품 가격비교",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "모아바 | 전자제품 가격비교",
+    description:
+      "새상품과 중고 가격을 한눈에 비교하고, 최적의 구매 시점을 찾아보세요.",
+    images: ["/icons/icon-192x192.png"],
+    creator: "@moaba",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+    },
+  },
 };
 
 export default function RootLayout({ children }) {
