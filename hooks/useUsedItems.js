@@ -67,7 +67,7 @@ export function useUsedItems(query) {
           (result.naverItems.length === 0 && result.bunjangItems.length === 0)
         ) {
           const baseQuery = getBaseSearchQuery(query);
-          console.log("Second attempt with:", baseQuery);
+
           result = await fetchItems(baseQuery);
         }
 

@@ -52,13 +52,13 @@ export function useAvgPrice(keyword) {
       try {
         // 첫 번째 시도: 기본 정제된 검색어로 시도
         const cleanedQuery = cleanSearchQuery(keyword);
-        console.log("First attempt with:", cleanedQuery);
+
         let price = await fetchAvgPrice(cleanedQuery);
 
         // 두 번째 시도: 모델명까지 제거한 검색어로 시도
         if (!price) {
           const baseQuery = getBaseSearchQuery(keyword);
-          console.log("Second attempt with:", baseQuery);
+
           price = await fetchAvgPrice(baseQuery);
         }
 

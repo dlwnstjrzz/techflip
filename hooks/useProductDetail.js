@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { getEnuriProductDetail } from "@/lib/api/enuri";
-import { cleanSearchQuery } from "@/lib/utils";
 import { useUsedItems } from "./useUsedItems";
 import { usePriceAnalysis } from "./usePriceAnalysis";
 

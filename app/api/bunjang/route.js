@@ -35,14 +35,7 @@ export async function GET(request) {
     );
 
     const data = await response.json();
-    console.log("번개장터 전체 응답:", data);
-    console.log("번개장터 메타데이터:", {
-      total: data.total,
-      list_total: data.list_total,
-      page: page,
-      pageSize: pageSize,
-      items_count: data.list?.length,
-    });
+
     // 광고 제외 및 잘못된 데이터 필터링
     const filteredItems = data.list.filter((item) => {
       return (

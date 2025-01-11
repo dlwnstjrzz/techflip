@@ -2,6 +2,7 @@ import "./globals.css";
 import Header from "@/components/layout/Header";
 import localFont from "next/font/local";
 import Script from "next/script";
+import { Toaster } from "@/components/ui/toaster";
 
 const pretendard = localFont({
   src: "../public/fonts/PretendardVariable.woff2",
@@ -84,6 +85,7 @@ export default function RootLayout({ children }) {
       <body className="font-pretendard">
         <Header showOnlyInSubPages />
         {children}
+        <Toaster />
       </body>
     </html>
   );

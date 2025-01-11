@@ -3,10 +3,9 @@ import PriceSummary from "./PriceSummary";
 import RetailerList from "../RetailerList";
 import UsedList from "../UsedList";
 import PriceChart from "./PriceChart";
-import ShareButton from "./ShareButton";
 import { useRef } from "react";
 import { Loader2 } from "lucide-react";
-
+import ShareButton from "@/components/share/ShareButton";
 export default function ProductInfo({
   product,
   usedItems,
@@ -21,7 +20,6 @@ export default function ProductInfo({
       window.scrollTo({ top: tabsRef.current.offsetTop, behavior: "smooth" });
     }
   };
-
   return (
     <div className="flex-1 min-w-0">
       {/* 제품 기본 정보 */}
@@ -32,9 +30,7 @@ export default function ProductInfo({
               {product.brand}
             </span>
           </div>
-          <div className="px-3 py-1 bg-gray-100 rounded-full">
-            <span className="text-sm font-medium text-gray-600">신상품</span>
-          </div>
+          <ShareButton />
         </div>
         <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
           {product.koreanName}
@@ -108,10 +104,6 @@ export default function ProductInfo({
             {priceHistory && <PriceChart priceHistory={priceHistory} />}
           </TabsContent>
         </Tabs>
-      </div>
-
-      <div className="mt-6">
-        <ShareButton />
       </div>
     </div>
   );

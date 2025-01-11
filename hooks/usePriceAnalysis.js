@@ -38,7 +38,7 @@ export function usePriceAnalysis(productName, modelno) {
       try {
         const cleanedQuery = cleanSearchQuery(productName);
         let result = await fetchAnalysis(cleanedQuery);
-        console.log("Result:", result);
+
         if (!result || !result.usedPrices) {
           const baseQuery = getBaseSearchQuery(productName);
           result = await fetchAnalysis(baseQuery);
