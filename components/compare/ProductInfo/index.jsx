@@ -30,7 +30,12 @@ export default function ProductInfo({
               {product.brand}
             </span>
           </div>
-          <ShareButton />
+          <ShareButton
+            url={`https://moaba.it/search/${product.id}`}
+            title={`${product.koreanName} - ${
+              product.brand
+            } | 새상품 ${product.priceRange.min.toLocaleString()}원부터`}
+          />
         </div>
         <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
           {product.koreanName}

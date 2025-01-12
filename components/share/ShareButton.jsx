@@ -29,7 +29,6 @@ export default function ShareButton({ url, title }) {
         });
         toast({
           description: "공유되었습니다!",
-          // variant: "default",
           duration: 2000,
         });
         return;
@@ -39,7 +38,6 @@ export default function ShareButton({ url, title }) {
       await navigator.clipboard.writeText(url || window.location.href);
       toast({
         description: "링크가 복사되었습니다!",
-        // variant: "success",
         duration: 2000,
       });
     } catch (error) {}
