@@ -5,7 +5,6 @@ import { usePriceAnalysis } from "./usePriceAnalysis";
 
 export function useProductDetail(productId) {
   const [product, setProduct] = useState(null);
-  const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 

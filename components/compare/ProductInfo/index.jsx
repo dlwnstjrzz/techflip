@@ -31,7 +31,7 @@ export default function ProductInfo({
             </span>
           </div>
           <ShareButton
-            url={`https://moaba.it/search/${product.id}`}
+            url={`https://moaba.it/compare/${product.id}`}
             title={`${product.koreanName} - ${
               product.brand
             } | 새상품 ${product.priceRange.min.toLocaleString()}원부터`}
