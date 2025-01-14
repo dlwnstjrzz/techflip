@@ -27,11 +27,35 @@ export function useProductDetail(productId) {
 
     async function fetchData() {
       try {
-        // 1. 먼저 기본 상품 정보 가져오기
+        // 1. 먼저 로컬스토리지에서 기본 상품 정보 확인
         const savedProduct = localStorage.getItem(`product_${productId}`);
-        const baseProduct = savedProduct ? JSON.parse(savedProduct) : null;
+        let baseProduct = savedProduct ? JSON.parse(savedProduct) : null;
 
-        // 2. 상세 정보 가져오기
+        // 로컬스토리지에 데이터가 없으면 API로 가져오기
+        if (!baseProduct) {
+          const productInfo = await fetch(
+            `/api/enuri/productInfo?modelno=${productId}`
+          ).then((res) => res.json());
+          baseProduct = {
+            id: productId,
+            name: productInfo.name,
+            koreanName: productInfo.name,
+            brand: productInfo.brand,
+            image: productInfo.image,
+            description: productInfo.description,
+            priceRange: {
+              min: productInfo.price.low,
+              max: productInfo.price.high,
+            },
+          };
+          // 로컬스토리지에 저장
+          localStorage.setItem(
+            `product_${productId}`,
+            JSON.stringify(baseProduct)
+          );
+        }
+
+        // 2. 상세 정보 가져오기 (판매처 정보 등)
         const detail = await getEnuriProductDetail(productId);
 
         const retailers = detail.data.shopPricelist.map((shop) => ({
